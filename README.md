@@ -1,11 +1,6 @@
-# Sequence-to-Sequence Model For Machine Translation
+# Seq2Seq-Machine-Translation
 
 This project implements a sequence-to-sequence model with attention mechanism for language translation tasks.
-
-
-## Introduction
-
-This project provides an implementation of a sequence-to-sequence model with attention, a powerful architecture for tasks like machine translation, text summarization, and more.
 
 ## Files
 
