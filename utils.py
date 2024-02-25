@@ -11,8 +11,8 @@ class Utils:
 
             optimizer.zero_grad()
             output = model(source, target)
-            output = output.reshape(-1, output.shape[-1])
-            target = target.reshape(-1)
+            output = output[1:].reshape(-1, output.shape[-1])
+            target = target[1:].reshape(-1)
             loss = loss_fn(output, target)
 
             loss.backward()
@@ -33,8 +33,8 @@ class Utils:
                 target = target.to(device)
 
                 output = model(source, target)
-                output = output.reshape(-1, output.shape[-1])
-                target = target.reshape(-1)
+                output = output[1:].reshape(-1, output.shape[-1])
+                target = target[1:].reshape(-1)
                 loss = loss_fn(output, target)
 
                 current_loss += loss.item()
