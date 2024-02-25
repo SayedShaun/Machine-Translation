@@ -9,7 +9,7 @@ from utils import Utils
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 dataset = CombineDataset(
-    data_path="Sample Data/BAN-Cap_caption_data.csv",
+    data_path="Sample Data/english to bengali.csv",
     eng_column="english_caption",
     ban_column="bengali_caption"
 )
