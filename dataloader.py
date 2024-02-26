@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
     english, bangla = next(iter(dataloader))
     print(english.shape, bangla.shape)
-    print(len(dataset.target.vocabs))
+    print(f"Source Vocabs: {len(dataset.target.vocabs)}, Target Vovabs: {len(dataset.target.vocabs)}")
