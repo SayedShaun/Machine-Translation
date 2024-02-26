@@ -9,8 +9,8 @@ from torch.nn.utils.rnn import pad_sequence
 
 class BaseDataset(Dataset):
     def __init__(self, file_path: str, column: str, add_sos_eos: bool=False):
-        self.df = pd.read_csv(file_path)
-        self.sentences = self.df[column]
+        self.dataframe = pd.read_csv(file_path)
+        self.sentences = self.dataframe[column]
         self.vocabs = build_vocab_from_iterator(
             self.token_genarator(self.sentences)
         )
@@ -33,7 +33,7 @@ class BaseDataset(Dataset):
             tokens = word_tokenize(clean_text)
             yield tokens
 
-    def text_to_sequences(self, sentences: str):
+    def text_to_sequences(self, sentences: str) -> int:
         sequence = [
             self.vocabs[token] if token in self.vocabs
             else self.vocabs["<UNK>"]
@@ -41,54 +41,54 @@ class BaseDataset(Dataset):
         ]
         if self.add_sos_eos == True:
             sequence = [self.vocabs["<SOS>"]] + sequence + [self.vocabs["<EOS>"]]
-
+        
         return sequence
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.sentences)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> torch.Tensor:
         item = self.sentences[index]
         sequence = self.text_to_sequences(item)
         return torch.tensor(sequence)
 
 
 class CombineDataset(Dataset):
-    def __init__(self, data_path, eng_column, ban_column):
-        self.eng_data = BaseDataset(
+    def __init__(self, data_path: str, source_column: str, target_column: str):
+        self.source = BaseDataset(
             file_path=data_path,
-            column=eng_column,
+            column=source_column,
             add_sos_eos=True
         )
-        self.bng_data = BaseDataset(
+        self.target = BaseDataset(
             file_path=data_path,
-            column=ban_column,
+            column=target_column,
             add_sos_eos=True
         )
 
     @staticmethod
-    def collate_fn(batch):
+    def collate_fn(batch) -> torch.Tensor:
         # en, bn = zip(batch)
-        en = [item[0] for item in batch]
-        bn = [item[1] for item in batch]
-        en_padded = pad_sequence(en, padding_value=0, batch_first=False)
-        bn_padded = pad_sequence(bn, padding_value=0, batch_first=False)
-        return en_padded, bn_padded
+        source = [item[0] for item in batch]
+        target = [item[1] for item in batch]
+        source_padded = pad_sequence(source, padding_value=0, batch_first=False)
+        target_padded = pad_sequence(target, padding_value=0, batch_first=False)
+        return source_padded, target_padded
 
-    def __len__(self):
-        return len(self.eng_data)
+    def __len__(self) -> int:
+        return len(self.source)
 
-    def __getitem__(self, index):
-        eng_item = self.eng_data[index]
-        bng_item = self.bng_data[index]
-        return eng_item, bng_item
+    def __getitem__(self, index) -> torch.Tensor:
+        source_item = self.source[index]
+        target_item = self.target[index]
+        return source_item, target_item
 
 
 if __name__ == "__main__":
     dataset = CombineDataset(
-        data_path="Data/BAN-Cap_caption_data.csv",
-        eng_column="english_caption",
-        ban_column="bengali_caption"
+        data_path="Sample Data/english to bengali.csv",
+        source_column="english_caption",
+        target_column="bengali_caption"
     )
     dataloader = DataLoader(
         dataset,
@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
     english, bangla = next(iter(dataloader))
     print(english.shape, bangla.shape)
-    print(len(dataset.bng_data.vocabs))
+    print(len(dataset.target.vocabs))

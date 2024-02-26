@@ -10,12 +10,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 dataset = CombineDataset(
     data_path="Sample Data/english to bengali.csv",
-    eng_column="english_caption",
-    ban_column="bengali_caption"
+    source_column="english_caption",
+    target_column="bengali_caption"
 )
 
-input_size = len(dataset.eng_data.vocabs)
-output_size = len(dataset.bng_data.vocabs)
+input_size = len(dataset.source.vocabs)
+output_size = len(dataset.target.vocabs)
 embed_size = 100 
 hidden_size = 128
 n_layers = 2
@@ -49,7 +49,7 @@ dataloader = DataLoader(
     collate_fn=dataset.collate_fn,
 )
 
-pad_idx = dataset.bng_data.vocabs["<PAD>"]
+pad_idx = dataset.target.vocabs["<PAD>"]
 loss_fn = nn.CrossEntropyLoss(ignore_index=pad_idx)
 optimizer = Adam(model.parameters(), lr=learning_rate)
 
