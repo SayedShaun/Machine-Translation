@@ -33,7 +33,7 @@ class BaseDataset(Dataset):
             tokens = word_tokenize(clean_text)
             yield tokens
 
-    def text_to_sequences(self, sentences: str) -> int:
+    def text_to_sequences(self, sentences: str) -> list[int]:
         sequence = [
             self.vocabs[token] if token in self.vocabs
             else self.vocabs["<UNK>"]
